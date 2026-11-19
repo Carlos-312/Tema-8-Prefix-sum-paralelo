@@ -230,11 +230,11 @@ Profundidad total: 6 niveles
 
 En general, para n elementos (cuando n es potencia de 2), el algoritmo tiene:
 
-``
+```
 Trabajo:     O(n)
 
 Profundidad: O(log n)
-``
+```
 
 Esto permite reducir la profundidad respecto al método secuencial.
 

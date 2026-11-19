@@ -232,6 +232,7 @@ En general, para n elementos (cuando n es potencia de 2), el algoritmo tiene:
 
 ``
 Trabajo:     O(n)
+
 Profundidad: O(log n)
 ``
 

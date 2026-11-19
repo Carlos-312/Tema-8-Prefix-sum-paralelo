@@ -58,31 +58,186 @@ Posición 2: 1 + 2 + 3 = 6
 Posición 3: 1 + 2 + 3 + 4 = 10
 ``
 
+## Fases sobre un arreglo pequeño (8 elementos)
 
-El algoritmo logra la exclusividad (*exclusive scan*) dividiendo el proceso en dos fases estructurales: **up-sweep** y **down-sweep**. 
+El algoritmo de Blelloch permite realizar Prefix Sum utilizando una estructura de árbol. Su funcionamiento se divide en dos fases principales:
 
-### Fases sobre un arreglo pequeño (8 elementos)
-Analicemos las fases sobre este arreglo inicial: `[3, 1, 7, 0, 4, 1, 6, 3]`
+### Up-sweep (fase de subida)
 
-**1. Fase Up-sweep (Reducción)**:
-Avanza desde las hojas hacia la raíz sumando bloques de tamaño creciente.
-*   **Paso 1 (stride 1):** Suma por pares. `[3, (3+1)=4, 7, (7+0)=7, 4, (4+1)=5, 6, (6+3)=9]`  
-    Queda: `[3, 4, 7, 7, 4, 5, 6, 9]`
-*   **Paso 2 (stride 2):** Suma de a cuatro.  
-    Queda: `[3, 4, 7, 11, 4, 5, 6, 14]`
-*   **Paso 3 (stride 4):** Suma final en la raíz.  
-    Queda: `[3, 4, 7, 11, 4, 5, 6, 25]` (25 es la suma total).
+En esta fase se calculan sumas parciales hasta obtener la suma total del arreglo.
 
-**2. Fase Down-sweep (Distribución)**:
-El algoritmo exclusivo fuerza el nodo raíz a `0` y propaga los valores acumulados de vuelta a las hojas.
-*   **Paso Inicial:** Raíz a cero. `[3, 4, 7, 11, 4, 5, 6, 0]`
-*   **Paso 1 (stride 4):** Intercambia el 0 con el nodo hijo izquierdo y suma.  
-    Queda: `[3, 4, 7, 0, 4, 5, 6, 11]` 
-*   **Paso 2 (stride 2):**  
-    Queda: `[3, 0, 7, 4, 4, 11, 6, 16]`
-*   **Paso 3 (stride 1):**  
-    Resultado final Exclusivo: `[0, 3, 4, 11, 11, 15, 16, 22]`
+Utilizando el arreglo:
 
+``
+A = [1, 2, 3, 4, 5, 6, 7, 8]
+``
+
+Primer nivel: sumas por parejas
+
+``
+1 + 2 = 3
+3 + 4 = 7
+5 + 6 = 11
+7 + 8 = 15
+``
+
+Segundo nivel:
+
+``
+3 + 7 = 10
+11 + 15 = 26
+``
+
+Tercer nivel:
+
+``
+10 + 26 = 36
+``
+
+Al finalizar esta fase obtenemos la suma total del arreglo: 36.
+
+### Down-sweep (fase de bajada)
+
+La fase Down-sweep es la segunda etapa del algoritmo de Blelloch. Su objetivo es distribuir las sumas parciales obtenidas en Up-sweep para calcular los prefijos de cada posición.
+
+Para comenzar, se reemplaza la suma total de la raíz por un cero, ya que inicialmente se calcula una suma exclusiva (sin incluir el elemento actual).
+
+Utilizaremos el arreglo:
+
+``
+A = [1, 2, 3, 4, 5, 6, 7, 8]
+``
+
+¿Cómo funciona?
+
+El algoritmo recorre el árbol de arriba hacia abajo siguiendo dos reglas:
+
+El hijo izquierdo recibe el valor de su padre.
+
+El hijo derecho recibe el valor del padre más la suma original del hijo izquierdo.
+
+Paso 1. Primer nivel
+
+Las sumas originales de las ramas eran 10 y 26. Comenzamos con cero:
+
+``
+Izquierda = 0
+Derecha = 0 + 10 = 10
+
+Resultado: [0, 10]
+``
+
+Paso 2. Segundo nivel
+
+Distribuimos los valores hacia los siguientes nodos:
+
+``
+Izquierda: 0 y 0 + 3 = 3
+Derecha: 10 y 10 + 11 = 21
+
+Resultado: [0, 3, 10, 21]
+``
+
+Paso 3. Tercer nivel
+
+Repetimos el procedimiento hasta llegar a las posiciones originales:
+
+``
+Pareja -------- Izquierda -------- Derecha
+
+1 y 2  --------     0     --------    1
+
+3 y 4  --------     3     --------    6
+
+5 y 6  --------     10    --------    15
+
+7 y 8  --------     21    --------    28
+``
+
+Obtenemos el resultado exclusivo:
+
+``
+[0, 1, 3, 6, 10, 15, 21, 28]
+``
+
+Resultado inclusivo
+
+Para obtener la suma acumulada normal, sumamos cada elemento original con su resultado exclusivo:
+
+``
+Resultado[i] = A[i] + ResultadoExclusivo[i]
+``
+
+Resultado final:
+
+``
+[1, 3, 6, 10, 15, 21, 28, 36]
+``
+
+---
+
+# ¿Por qué las iteraciones de cada nivel son independientes?
+
+Una de las principales ventajas del algoritmo de Blelloch es que permite ejecutar varias operaciones simultáneamente (paralelismo).
+
+Por ejemplo, en el primer nivel del arreglo tenemos:
+
+``
+1 + 2 = 3
+3 + 4 = 7
+5 + 6 = 11
+7 + 8 = 15
+``
+
+Estas cuatro operaciones son independientes porque ninguna necesita el resultado de otra. Por esta razón, podemos distribuirlas entre diferentes hilos de ejecución.
+
+Sin embargo, debemos esperar a que termine un nivel antes de comenzar el siguiente, ya que los resultados de un nivel se utilizan en el siguiente. Algo importante es que las operaciones de un mismo nivel pueden ejecutarse en paralelo, mientras que entre niveles deben respetarse las dependencias.
+
+---
+
+# Trabajo y profundidad
+
+Para analizar el rendimiento de un algoritmo paralelo se utilizan dos conceptos:
+
+Trabajo: representa la cantidad total de operaciones que realiza el algoritmo.
+
+Profundidad: representa la cantidad de niveles de operaciones dependientes que deben ejecutarse.
+
+
+**Comparación de algoritmos:**
+
+``
+Característica --------- Scan secuencial --------- Blelloch paralelo
+
+Trabajo        ---------      O(n)       ---------       O(n)
+
+Profundidad    ---------      O(n)       ---------     O(log n)
+
+Ejecución      ---------  Una operación  ---------  Operaciones simultáneas 
+                           tras otra                      por nivel
+``
+
+El algoritmo secuencial necesita recorrer el arreglo de manera progresiva, mientras que Blelloch organiza las operaciones en forma de árbol.
+
+Para un arreglo de 8 elementos:
+
+``
+Up-sweep:   3 niveles
+Down-sweep: 3 niveles
+
+Profundidad total: 6 niveles
+``
+
+En general, para n elementos (cuando n es potencia de 2), el algoritmo tiene:
+
+``
+Trabajo:     O(n)
+Profundidad: O(log n)
+``
+
+Esto permite reducir la profundidad respecto al método secuencial.
+
+---
 
 # Demo en C con OpenMP
 A continuación, una implementación del *Prefix Sum* en C implementando la división del trabajo en cada nivel del árbol:

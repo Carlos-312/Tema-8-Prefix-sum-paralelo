@@ -48,7 +48,7 @@ Cada posición contiene la suma de los elementos anteriores, incluyendo el eleme
 
 Por ejemplo:
 
-``
+```
 Posición 0: 1
 
 Posición 1: 1 + 2 = 3
@@ -56,7 +56,7 @@ Posición 1: 1 + 2 = 3
 Posición 2: 1 + 2 + 3 = 6
 
 Posición 3: 1 + 2 + 3 + 4 = 10
-``
+```
 
 ## Fases sobre un arreglo pequeño (8 elementos)
 
@@ -120,39 +120,41 @@ Paso 1. Primer nivel
 
 Las sumas originales de las ramas eran 10 y 26. Comenzamos con cero:
 
-``
+```
 Izquierda = 0
+
 Derecha = 0 + 10 = 10
 
 Resultado: [0, 10]
-``
+```
 
 Paso 2. Segundo nivel
 
 Distribuimos los valores hacia los siguientes nodos:
 
-``
+```
 Izquierda: 0 y 0 + 3 = 3
+
 Derecha: 10 y 10 + 11 = 21
 
 Resultado: [0, 3, 10, 21]
-``
+```
 
 Paso 3. Tercer nivel
 
 Repetimos el procedimiento hasta llegar a las posiciones originales:
 
-``
+```
 Pareja -------- Izquierda -------- Derecha
 
-1 y 2  --------     0     --------    1
+1 y 2 ------------ 0 --------------- 1
 
-3 y 4  --------     3     --------    6
+3 y 4 ------------ 3 --------------- 6
 
-5 y 6  --------     10    --------    15
+5 y 6 ------------ 10 -------------- 15
 
-7 y 8  --------     21    --------    28
-``
+7 y 8 ------------ 21 -------------- 28
+```
 
 Obtenemos el resultado exclusivo:
 
@@ -182,12 +184,15 @@ Una de las principales ventajas del algoritmo de Blelloch es que permite ejecuta
 
 Por ejemplo, en el primer nivel del arreglo tenemos:
 
-``
+```
 1 + 2 = 3
+
 3 + 4 = 7
+
 5 + 6 = 11
+
 7 + 8 = 15
-``
+```
 
 Estas cuatro operaciones son independientes porque ninguna necesita el resultado de otra. Por esta razón, podemos distribuirlas entre diferentes hilos de ejecución.
 
@@ -206,27 +211,27 @@ Profundidad: representa la cantidad de niveles de operaciones dependientes que d
 
 **Comparación de algoritmos:**
 
-``
+```
 Característica --------- Scan secuencial --------- Blelloch paralelo
 
-Trabajo        ---------      O(n)       ---------       O(n)
+Trabajo --------------------- O(n) ---------------------- O(n)
 
-Profundidad    ---------      O(n)       ---------     O(log n)
+Profundidad ----------------- O(n) -------------------- O(log n)
 
-Ejecución      ---------  Una operación  ---------  Operaciones simultáneas 
-                           tras otra                      por nivel
-``
+Ejecución ---------- Una operación tras otra -- Operaciones simultáneas por nivel
+```
 
 El algoritmo secuencial necesita recorrer el arreglo de manera progresiva, mientras que Blelloch organiza las operaciones en forma de árbol.
 
 Para un arreglo de 8 elementos:
 
-``
+```
 Up-sweep:   3 niveles
+
 Down-sweep: 3 niveles
 
 Profundidad total: 6 niveles
-``
+```
 
 En general, para n elementos (cuando n es potencia de 2), el algoritmo tiene:
 

@@ -3,7 +3,7 @@
 ---
 
 # Integrantes
-- [número de cuenta] - Nombre
+- [323255343] - Gil Isaias Kevin
 - [número de cuenta] - Nombre
 - [número de cuenta] - Nombre
 - [número de cuenta] - Nombre
@@ -16,6 +16,9 @@
 
 **Objetivo:** El propósito de la exposición es mostrar cómo calcular sumas acumuladas en paralelo manteniendo una eficiencia de trabajo de `O(n)` y reduciendo drásticamente la profundidad computacional a `O(log n)`.
 
+**¿Qué es Prefix Sum?** 
+Prefix Sum, también conocido como suma acumulada, es una operación que consiste en sumar progresivamente los elementos de un arreglo. Se utiliza en diferentes áreas de la computación, como el procesamiento de datos, imágenes y algoritmos paralelos.
+
 **Relación con la Ley de Brent, Trabajo y Profundidad:**
 La Ley de Brent establece que un algoritmo con un trabajo total `T1` y una profundidad `T_inf` puede ejecutarse en `p` procesadores con un tiempo limitado por `Tp <= (T1 / p) + T_inf`. 
 Aunque el algoritmo de suma secuencial tradicional realiza un trabajo lineal (`O(n)`), su naturaleza es estrictamente dependiente (el paso actual depende del anterior), lo que deja su profundidad también en `O(n)`. Otros algoritmos paralelos básicos (como el de Hillis-Steele) bajan la profundidad a `O(log n)` pero desperdician ciclos aumentando el trabajo a `O(n log n)`. 
@@ -27,6 +30,34 @@ Para aplicar paralelismo de datos iterativo con `#pragma omp parallel for`, las 
 ---
 
 # Demostraciones
+
+**Ejemplo de Prefix Sum:**
+Consideremos el siguiente arreglo:
+
+``
+A = [1, 2, 3, 4, 5, 6, 7, 8]
+``
+
+Su suma acumulada es:
+
+``
+R = [1, 3, 6, 10, 15, 21, 28, 36]
+``
+
+Cada posición contiene la suma de los elementos anteriores, incluyendo el elemento actual.
+
+Por ejemplo:
+
+``
+Posición 0: 1
+
+Posición 1: 1 + 2 = 3
+
+Posición 2: 1 + 2 + 3 = 6
+
+Posición 3: 1 + 2 + 3 + 4 = 10
+``
+
 
 El algoritmo logra la exclusividad (*exclusive scan*) dividiendo el proceso en dos fases estructurales: **up-sweep** y **down-sweep**. 
 
@@ -52,7 +83,8 @@ El algoritmo exclusivo fuerza el nodo raíz a `0` y propaga los valores acumulad
 *   **Paso 3 (stride 1):**  
     Resultado final Exclusivo: `[0, 3, 4, 11, 11, 15, 16, 22]`
 
-### Demo en C con OpenMP
+
+# Demo en C con OpenMP
 A continuación, una implementación del *Prefix Sum* en C implementando la división del trabajo en cada nivel del árbol:
 
 ```c

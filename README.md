@@ -445,11 +445,27 @@ La versión paralela se ejecutó utilizando 1, 2, 4 y 8 hilos, con el objetivo d
 
 ```
      Implementación        |  Hilos  |   Tiempo promedio (s)  |   Speedup   |   Eficiencia 
- Prefix Sum secuencial     |    1    |        0.001247	      |    1.000    |      100%
+ Prefix Sum secuencial     |    1    |        0.001247	      |    1.000    |      --
    Blelloch paralelo       |    1    |        0.002922	      |    0.427    |     42.7%
    Blelloch paralelo       |    2    |        0.003308        |    0.377    |     18.8%
    Blelloch paralelo       |    4    |        0.004543        |	   0.274    |      6.9%
    Blelloch paralelo       |    8    |        0.006903	      |    0.181    |      2.3#
 ```
+La versión secuencial tiene un speedup de 1 y una eficiencia teórica de referencia del 100%, ya que se compara consigo misma utilizando un solo hilo, sin embargo, se coloca un guion en la eficiencia, ya que no se evalúa el paralelismo.
 
-## Gráficas de rendiemiento
+## Gráficas de rendimiento
+
+
+<img width="819" height="242" alt="image" src="https://github.com/user-attachments/assets/a95f8e1b-bea9-4069-8be4-eb557de8f30d" />
+
+
+
+
+
+
+
+
+
+Los resultados muestran que la implementación secuencial obtuvo el menor tiempo de ejecución (0.001247 s), mientras que Blelloch fue más lento conforme aumentó la cantidad de hilos. Además, el speedup se mantuvo por debajo de 1 y la eficiencia disminuyó progresivamente.
+
+Este comportamiento puede deberse a los costos de sincronización y administración de los hilos. Aunque Blelloch reduce la profundidad a O(log n), se comprobó que una menor profundidad no garantiza una ejecución más rápida, ya que también influyen los recursos del equipo y los costos del paralelismo.

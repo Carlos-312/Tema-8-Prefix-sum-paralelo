@@ -17,15 +17,33 @@
 **Objetivo:** El propósito de la exposición es mostrar cómo calcular sumas acumuladas en paralelo manteniendo una eficiencia de trabajo de `O(n)` y reduciendo drásticamente la profundidad computacional a `O(log n)`.
 
 **¿Qué es Prefix Sum?** 
-Prefix Sum, también conocido como suma acumulada, es una operación que consiste en sumar progresivamente los elementos de un arreglo. Se utiliza en diferentes áreas de la computación, como el procesamiento de datos, imágenes y algoritmos paralelos.
+Prefix Sum, también conocido como suma de prefijos o suma acumulada, es una operación que permite calcular progresivamente las sumas de los elementos de un arreglo. Su objetivo es obtener, para cada posición, la suma de los elementos anteriores o hasta la posición actual.
+
+Se utiliza en diferentes áreas de la computación, como el procesamiento de datos, imágenes y algoritmos paralelos. Además, no se limita únicamente a la suma, ya que también puede aplicarse a operaciones asociativas, como la multiplicación, el máximo o el mínimo. Esta propiedad permite reorganizar los cálculos sin modificar el resultado.
+
+**Prefix Sum Paralelo** 
+Tradicionalmente, las sumas acumuladas se calculan de manera secuencial, donde cada operación depende del resultado anterior. Esta dependencia dificulta que los cálculos se realicen simultáneamente.
+
+Para superar esta limitación, Prefix Sum Paralelo reorganiza las operaciones para distribuirlas entre varios hilos o procesadores. En lugar de calcular las sumas consecutivamente, utiliza resultados parciales que pueden obtenerse al mismo tiempo y combinarse posteriormente.Esto es posible gracias a la propiedad asociativa de la suma, que permite agrupar los elementos de distintas maneras sin alterar el resultado.
+
+Entre los algoritmos utilizados se encuentran Hillis-Steele y Blelloch. Aunque ambos reducen la profundidad computacional a \(O(\log n)\), Blelloch destaca porque mantiene un trabajo total de \(O(n)\), logrando una mayor eficiencia teórica.
+
+**Algoritmo de Blelloch**
+El algoritmo de Blelloch utiliza una estructura de árbol binario para organizar las operaciones en diferentes niveles, permitiendo ejecutar simultáneamente los cálculos independientes.
+
+Su funcionamiento se divide en dos fases:
+- Up-sweep (reducción ascendente): consiste en combinar los elementos del arreglo para obtener sumas parciales de grupos cada vez más grandes, hasta calcular la suma total. En cada nivel, las operaciones de grupos diferentes pueden ejecutarse simultáneamente.
+- Down-sweep (distribución descendente): comienza reemplazando por cero el valor de la raíz y distribuye las sumas parciales a través del árbol. De esta manera, cada posición obtiene la suma de los elementos anteriores, generando el Prefix Sum exclusivo.
+
+**Independencia de operaciones y OpenMP**
+Una característica fundamental de Blelloch es que las operaciones de un mismo nivel son independientes, porque trabajan sobre posiciones diferentes del arreglo.Para organizar estos cálculos se utiliza un desplazamiento llamado stride o salto, que determina qué elementos deben combinarse en cada nivel. Durante Up-sweep, este salto aumenta progresivamente, mientras que en Down-sweep disminuye.
+
+Esta característica permite implementar el algoritmo mediante OpenMP, utilizando la directiva #pragma omp parallel for para distribuir las operaciones entre diferentes hilos.Al trabajar sobre posiciones independientes, se evitan las condiciones de carrera dentro de cada nivel. Sin embargo, los niveles consecutivos sí presentan dependencias, por lo que es necesario sincronizar los hilos antes de continuar con el siguiente.
 
 **Relación con la Ley de Brent, Trabajo y Profundidad:**
 La Ley de Brent establece que un algoritmo con un trabajo total `T1` y una profundidad `T_inf` puede ejecutarse en `p` procesadores con un tiempo limitado por `Tp <= (T1 / p) + T_inf`. 
 Aunque el algoritmo de suma secuencial tradicional realiza un trabajo lineal (`O(n)`), su naturaleza es estrictamente dependiente (el paso actual depende del anterior), lo que deja su profundidad también en `O(n)`. Otros algoritmos paralelos básicos (como el de Hillis-Steele) bajan la profundidad a `O(log n)` pero desperdician ciclos aumentando el trabajo a `O(n log n)`. 
 El algoritmo de Blelloch brilla porque es *work-efficient* (óptimo en trabajo): reorganiza las operaciones en forma de árbol, conservando el trabajo asintótico en `O(n)` y alcanzando una profundidad logarítmica de `O(log n)`.
-
-**Independencia de iteraciones para `parallel for`:**
-Para aplicar paralelismo de datos iterativo con `#pragma omp parallel for`, las iteraciones deben ser independientes. En el algoritmo de Blelloch, esto se logra porque en un nivel determinado del árbol, cada hilo opera con celdas de memoria completamente separadas por un "salto" (*stride*). Al no haber cruces ni dos hilos escribiendo en la misma celda a la vez, se evitan las condiciones de carrera sin usar bloqueos.
 
 ---
 

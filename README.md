@@ -4,7 +4,7 @@
 
 # Integrantes
 - [323255343] - Gil Isaias Kevin
-- [número de cuenta] - Nombre
+- [323273613] - Sánchez Ledesma Paulina
 - [número de cuenta] - Nombre
 - [número de cuenta] - Nombre
 

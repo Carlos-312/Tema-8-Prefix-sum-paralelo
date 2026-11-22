@@ -447,7 +447,7 @@ La versión paralela se ejecutó utilizando 1, 2, 4 y 8 hilos, con el objetivo d
      Implementación        |  Hilos  |   Tiempo promedio (s)  |   Speedup   |   Eficiencia 
  Prefix Sum secuencial     |    1    |        0.001247	      |    1.000    |      100%
    Blelloch paralelo       |    1    |        0.002922	      |    0.427    |     42.7%
-   Blelloch paralelo       |    2    |        0.003308        |    0.377	|     18.8%
+   Blelloch paralelo       |    2    |        0.003308        |    0.377    |     18.8%
    Blelloch paralelo       |    4    |        0.004543        |	   0.274    |      6.9%
    Blelloch paralelo       |    8    |        0.006903	      |    0.181    |      2.3#
 ```

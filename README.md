@@ -454,17 +454,7 @@ La versión paralela se ejecutó utilizando 1, 2, 4 y 8 hilos, con el objetivo d
 La versión secuencial tiene un speedup de 1 y una eficiencia teórica de referencia del 100%, ya que se compara consigo misma utilizando un solo hilo, sin embargo, se coloca un guion en la eficiencia, ya que no se evalúa el paralelismo.
 
 ## Gráficas de rendimiento
-
-
-<img width="819" height="242" alt="image" src="https://github.com/user-attachments/assets/a95f8e1b-bea9-4069-8be4-eb557de8f30d" />
-
-
-
-
-
-
-
-
+<img width="752" height="452" alt="image" src="https://github.com/user-attachments/assets/028ab551-3a54-4631-b722-bc60f15ea938" />
 
 Los resultados muestran que la implementación secuencial obtuvo el menor tiempo de ejecución (0.001247 s), mientras que Blelloch fue más lento conforme aumentó la cantidad de hilos. Además, el speedup se mantuvo por debajo de 1 y la eficiencia disminuyó progresivamente.
 

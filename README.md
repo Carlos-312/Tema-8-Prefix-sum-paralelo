@@ -172,13 +172,13 @@ Repetimos el procedimiento hasta llegar a las posiciones originales:
 ```
 Pareja -------- Izquierda -------- Derecha
 
-1 y 2 ------------ 0 --------------- 1
+1 y 2 ------------ 0 --------------- 0 + 1 = 1
 
-3 y 4 ------------ 3 --------------- 6
+3 y 4 ------------ 3 --------------- 3 + 3 = 6
 
-5 y 6 ------------ 10 -------------- 15
+5 y 6 ------------ 10 -------------- 10 + 5 = 15
 
-7 y 8 ------------ 21 -------------- 28
+7 y 8 ------------ 21 -------------- 21 + 7 = 28
 ```
 
 Obtenemos el resultado exclusivo:
@@ -201,6 +201,8 @@ Resultado final:
 [1, 3, 6, 10, 15, 21, 28, 36]
 ``
 
+De esta manera se comprueba que el algoritmo de Blelloch permite obtener las mismas sumas acumuladas que el procedimiento secuencial, pero mediante operaciones organizadas en distintos niveles.
+
 ---
 
 # ¿Por qué las iteraciones de cada nivel son independientes?
@@ -220,6 +222,11 @@ Por ejemplo, en el primer nivel del arreglo tenemos:
 ```
 
 Estas cuatro operaciones son independientes porque ninguna necesita el resultado de otra. Por esta razón, podemos distribuirlas entre diferentes hilos de ejecución.
+
+    Hilo 0        Hilo 1         Hilo 2         Hilo 3
+    1 + 2         3 + 4           5 + 6          7 + 8
+      ↓             ↓               ↓              ↓
+      3             7               11             15
 
 Sin embargo, debemos esperar a que termine un nivel antes de comenzar el siguiente, ya que los resultados de un nivel se utilizan en el siguiente. Algo importante es que las operaciones de un mismo nivel pueden ejecutarse en paralelo, mientras que entre niveles deben respetarse las dependencias.
 

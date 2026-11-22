@@ -5,7 +5,7 @@
 # Integrantes
 - [323255343] - Gil Isaias Kevin
 - [323273613] - Sánchez Ledesma Paulina
-- [número de cuenta] - Nombre
+- [323111047] - Montes Alcántara Diego
 - [número de cuenta] - Nombre
 
 ---

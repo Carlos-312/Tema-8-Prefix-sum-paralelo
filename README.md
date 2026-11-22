@@ -459,3 +459,10 @@ La versión secuencial tiene un speedup de 1 y una eficiencia teórica de refere
 Los resultados muestran que la implementación secuencial obtuvo el menor tiempo de ejecución (0.001247 s), mientras que Blelloch fue más lento conforme aumentó la cantidad de hilos. Además, el speedup se mantuvo por debajo de 1 y la eficiencia disminuyó progresivamente.
 
 Este comportamiento puede deberse a los costos de sincronización y administración de los hilos. Aunque Blelloch reduce la profundidad a O(log n), se comprobó que una menor profundidad no garantiza una ejecución más rápida, ya que también influyen los recursos del equipo y los costos del paralelismo.
+
+----
+
+# Conclusiones 
+
+# Referencias 
+

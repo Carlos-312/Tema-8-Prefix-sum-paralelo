@@ -439,15 +439,17 @@ Los resultados obtenidos permiten comprobar que el algoritmo de Blelloch calcula
 
 ## Tabla comparativa de tiempos 
 
-     Implementación        |  Hilos  |   Tiempo promedio (s) 
- Prefix Sum secuencial     |    1    |
-   Blelloch paralelo       |    1    |
-   Blelloch paralelo       |    2    |
-   Blelloch paralelo       |    4    |
-   Blelloch paralelo       |    8    |   
+Para evaluar el rendimiento de Prefix Sum Paralelo, se realizaron pruebas utilizando un arreglo de 1,048,576 elementos, comparando el algoritmo secuencial con la implementación de Blelloch en OpenMP.
 
-## Cálculo de speedup 
+La versión paralela se ejecutó utilizando 1, 2, 4 y 8 hilos, con el objetivo de observar cómo cambia el tiempo al distribuir el trabajo entre diferentes cantidades de hilos.
 
-## Cálculo de eficiencia 
+```
+     Implementación        |  Hilos  |   Tiempo promedio (s)  |   Speedup   |   Eficiencia 
+ Prefix Sum secuencial     |    1    |        0.001247	      |    1.000    |      100%
+   Blelloch paralelo       |    1    |        0.002922	      |    0.427    |     42.7%
+   Blelloch paralelo       |    2    |        0.003308        |    0.377	|     18.8%
+   Blelloch paralelo       |    4    |        0.004543        |	   0.274    |      6.9%
+   Blelloch paralelo       |    8    |        0.006903	      |    0.181    |      2.3#
+```
 
 ## Gráficas de rendiemiento

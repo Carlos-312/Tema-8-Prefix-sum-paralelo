@@ -16,7 +16,8 @@
 
 **Objetivo:** El propósito de la exposición es mostrar cómo calcular sumas acumuladas en paralelo manteniendo una eficiencia de trabajo de `O(n)` y reduciendo drásticamente la profundidad computacional a `O(log n)`.
 
-**¿Qué es Prefix Sum?** 
+# ¿Qué es Prefix Sum?
+
 Prefix Sum, también conocido como suma de prefijos o suma acumulada, es una operación que permite calcular progresivamente las sumas de los elementos de un arreglo. Su objetivo es obtener, para cada posición, la suma de los elementos anteriores o hasta la posición actual.
 
 Se utiliza en diferentes áreas de la computación, como el procesamiento de datos, imágenes y algoritmos paralelos. Además, no se limita únicamente a la suma, ya que también puede aplicarse a operaciones asociativas, como la multiplicación, el máximo o el mínimo. Esta propiedad permite reorganizar los cálculos sin modificar el resultado.

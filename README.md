@@ -56,15 +56,14 @@ El algoritmo de Blelloch brilla porque es *work-efficient* (óptimo en trabajo):
 
 # Demostraciones
 
-**Ejemplo de Prefix Sum:**
-Consideremos el siguiente arreglo:
+## Ejemplo de Prefix Sum:
 
+Consideremos el siguiente arreglo:
 ``
 A = [1, 2, 3, 4, 5, 6, 7, 8]
 ``
 
 Su suma acumulada es:
-
 ``
 R = [1, 3, 6, 10, 15, 21, 28, 36]
 ``
@@ -136,15 +135,12 @@ A = [1, 2, 3, 4, 5, 6, 7, 8]
 ¿Cómo funciona?
 
 El algoritmo recorre el árbol de arriba hacia abajo siguiendo dos reglas:
+- El hijo izquierdo recibe el valor de su padre.
+- El hijo derecho recibe el valor del padre más la suma original del hijo izquierdo.
 
-El hijo izquierdo recibe el valor de su padre.
-
-El hijo derecho recibe el valor del padre más la suma original del hijo izquierdo.
-
-Paso 1. Primer nivel
+**Paso 1. Primer nivel**
 
 Las sumas originales de las ramas eran 10 y 26. Comenzamos con cero:
-
 ```
 Izquierda = 0
 
@@ -153,10 +149,9 @@ Derecha = 0 + 10 = 10
 Resultado: [0, 10]
 ```
 
-Paso 2. Segundo nivel
+**Paso 2. Segundo nivel**
 
 Distribuimos los valores hacia los siguientes nodos:
-
 ```
 Izquierda: 0 y 0 + 3 = 3
 
@@ -165,10 +160,9 @@ Derecha: 10 y 10 + 11 = 21
 Resultado: [0, 3, 10, 21]
 ```
 
-Paso 3. Tercer nivel
+**Paso 3. Tercer nivel**
 
 Repetimos el procedimiento hasta llegar a las posiciones originales:
-
 ```
 Pareja -------- Izquierda -------- Derecha
 
@@ -182,7 +176,6 @@ Pareja -------- Izquierda -------- Derecha
 ```
 
 Obtenemos el resultado exclusivo:
-
 ``
 [0, 1, 3, 6, 10, 15, 21, 28]
 ``
@@ -190,13 +183,11 @@ Obtenemos el resultado exclusivo:
 Resultado inclusivo
 
 Para obtener la suma acumulada normal, sumamos cada elemento original con su resultado exclusivo:
-
 ``
 Resultado[i] = A[i] + ResultadoExclusivo[i]
 ``
 
 Resultado final:
-
 ``
 [1, 3, 6, 10, 15, 21, 28, 36]
 ``
@@ -228,21 +219,19 @@ Estas cuatro operaciones son independientes porque ninguna necesita el resultado
       ↓             ↓               ↓              ↓
       3             7               11             15
 
-Sin embargo, debemos esperar a que termine un nivel antes de comenzar el siguiente, ya que los resultados de un nivel se utilizan en el siguiente. Algo importante es que las operaciones de un mismo nivel pueden ejecutarse en paralelo, mientras que entre niveles deben respetarse las dependencias.
+Sin embargo, debemos esperar a que termine un nivel antes de comenzar el siguiente, ya que los resultados de un nivel se utilizan en el siguiente. Algo importante es que las operaciones de un mismo nivel pueden ejecutarse en paralelo, mientras que entre niveles consecutivos si deben respetarse las dependencias, utilizan los resultados calculados anteriormente. Por esta razón, es necesario sincronizar los hilos antes de comenzar el siguiente nivel.
+
+Esta característica es la que permite utilizar la directiva `#pragma omp parallel for` para repartir las iteraciones entre varios hilos.
 
 ---
 
 # Trabajo y profundidad
 
 Para analizar el rendimiento de un algoritmo paralelo se utilizan dos conceptos:
-
-Trabajo: representa la cantidad total de operaciones que realiza el algoritmo.
-
-Profundidad: representa la cantidad de niveles de operaciones dependientes que deben ejecutarse.
-
+- Trabajo: representa la cantidad total de operaciones que realiza el algoritmo.
+- Profundidad: representa la cantidad de niveles de operaciones dependientes que deben ejecutarse.
 
 **Comparación de algoritmos:**
-
 ```
 Característica --------- Scan secuencial --------- Blelloch paralelo
 
@@ -256,7 +245,6 @@ Ejecución ---------- Una operación tras otra -- Operaciones simultáneas por n
 El algoritmo secuencial necesita recorrer el arreglo de manera progresiva, mientras que Blelloch organiza las operaciones en forma de árbol.
 
 Para un arreglo de 8 elementos:
-
 ```
 Up-sweep:   3 niveles
 
@@ -266,7 +254,6 @@ Profundidad total: 6 niveles
 ```
 
 En general, para n elementos (cuando n es potencia de 2), el algoritmo tiene:
-
 ```
 Trabajo:     O(n)
 
@@ -277,15 +264,30 @@ Esto permite reducir la profundidad respecto al método secuencial.
 
 ---
 
-# Demo en C con OpenMP
-A continuación, una implementación del *Prefix Sum* en C implementando la división del trabajo en cada nivel del árbol:
+## Demo en C con OpenMP
+Para demostrar el funcionamiento de Prefix Sum Paralelo, se implementó el algoritmo de Blelloch en lenguaje C utilizando OpenMP, con el objetivo de distribuir las operaciones entre diferentes hilos en cada nivel del árbol.
+
+El programa desarrolla las fases Up-sweep y Down-sweep mediante la directiva #pragma omp parallel for, que permite ejecutar simultáneamente las operaciones independientes. Además, se incluye una implementación secuencial para comprobar los resultados y comparar los tiempos de ejecución utilizando un arreglo de mayor tamaño.
 
 ```c
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <omp.h>
 
+// Prefix Sum secuencial inclusivo
+void scan_secuencial(const int *a, int *r, int n) {
+    int suma = 0;
+    for (int i = 0; i < n; i++) {
+        suma += a[i];
+        r[i] = suma;
+    }
+}
+
+// Blelloch paralelo: resultado exclusivo
+// n debe ser potencia de dos
 void blelloch_scan_parallel(int *arr, int n) {
+
     // 1. Fase Up-sweep
     for (int stride = 1; stride < n; stride *= 2) {
         #pragma omp parallel for
@@ -293,8 +295,8 @@ void blelloch_scan_parallel(int *arr, int n) {
             arr[i + stride] += arr[i];
         }
     }
-    
-    // Preparación para el arreglo exclusivo
+
+    // Preparacion del resultado exclusivo
     arr[n - 1] = 0;
 
     // 2. Fase Down-sweep
@@ -307,3 +309,145 @@ void blelloch_scan_parallel(int *arr, int n) {
         }
     }
 }
+
+// Imprimir elementos de un arreglo
+void imprimir(const char *etiqueta, const int *a, int n) {
+    printf("%s", etiqueta);
+    for (int i = 0; i < n; i++) {
+        printf("%d%s", a[i], i == n-1 ? "\n" : " ");
+    }
+}
+
+int main(void) {
+
+    // DEMOSTRACION CON 8 ELEMENTOS
+    int original[8] = {1,2,3,4,5,6,7,8};
+    int scan[8];
+
+    memcpy(scan, original, sizeof original);
+
+    omp_set_num_threads(4);
+    blelloch_scan_parallel(scan, 8);
+
+    imprimir("Original:  ", original, 8);
+    imprimir("Exclusivo: ", scan, 8);
+
+    // Conversion a Prefix Sum inclusivo
+    for (int i = 0; i < 8; i++) {
+        scan[i] += original[i];
+    }
+
+    imprimir("Inclusivo: ", scan, 8);
+
+    // COMPARACION CON ARREGLO GRANDE
+    const int n = 1 << 20;
+    const int repeticiones = 5;
+
+    int *datos = malloc((size_t)n * sizeof(int));
+    int *secuencial = malloc((size_t)n * sizeof(int));
+    int *paralelo = malloc((size_t)n * sizeof(int));
+
+    if (!datos || !secuencial || !paralelo) {
+        fprintf(stderr, "Error de memoria.\n");
+        free(datos);
+        free(secuencial);
+        free(paralelo);
+        return 1;
+    }
+
+    for (int i = 0; i < n; i++) {
+        datos[i] = i % 8 + 1;
+    }
+
+    // Medir ejecucion secuencial
+    double tiempo_sec = 0.0;
+
+    for (int r = 0; r < repeticiones; r++) {
+        double inicio = omp_get_wtime();
+
+        scan_secuencial(datos, secuencial, n);
+
+        tiempo_sec += omp_get_wtime() - inicio;
+    }
+
+    tiempo_sec /= repeticiones;
+
+    printf("\nArreglo grande (%d elementos)\n", n);
+    printf("Secuencial: %.6f s\n", tiempo_sec);
+
+    // Medir ejecucion paralela
+    int hilos[] = {1,2,4,8};
+
+    for (int k = 0; k < 4; k++) {
+        omp_set_num_threads(hilos[k]);
+
+        double tiempo_par = 0.0;
+
+        for (int r = 0; r < repeticiones; r++) {
+            double inicio = omp_get_wtime();
+
+            memcpy(paralelo, datos, (size_t)n * sizeof(int));
+            blelloch_scan_parallel(paralelo, n);
+
+            // Conversion a inclusivo
+            #pragma omp parallel for
+            for (int i = 0; i < n; i++) {
+                paralelo[i] += datos[i];
+            }
+
+            tiempo_par += omp_get_wtime() - inicio;
+
+            // Verificar resultados
+            if (memcmp(paralelo, secuencial,
+                       (size_t)n * sizeof(int)) != 0) {
+                printf("Error: resultados diferentes\n");
+                free(datos);
+                free(secuencial);
+                free(paralelo);
+                return 1;
+            }
+        }
+
+        tiempo_par /= repeticiones;
+
+        double speedup = tiempo_sec / tiempo_par;
+        double eficiencia = 100.0 * speedup / hilos[k];
+
+        printf("%d hilos: %.6f s | Speedup: %.3f"
+               " | Eficiencia: %.1f%% | OK\n",
+               hilos[k], tiempo_par,
+               speedup, eficiencia);
+    }
+
+    free(datos);
+    free(secuencial);
+    free(paralelo);
+
+    return 0;
+}
+```
+
+## Resultados de la demostración
+
+```
+Original:  1 2 3 4 5 6 7 8
+Exclusivo: 0 1 3 6 10 15 21 28
+Inclusivo: 1 3 6 10 15 21 28 36
+```
+
+Los resultados obtenidos permiten comprobar que el algoritmo de Blelloch calcula correctamente las sumas acumuladas. El resultado exclusivo coincide con el procedimiento de Down-sweep desarrollado manualmente, mientras que la versión inclusiva corresponde a la suma acumulada convencional.
+
+## Tabla comparativa de tiempos 
+
+     Implementación        |  Hilos  |   Tiempo promedio (s) 
+ Prefix Sum secuencial     |    1    |
+   Blelloch paralelo       |    1    |
+   Blelloch paralelo       |    2    |
+   Blelloch paralelo       |    4    |
+   Blelloch paralelo       |    8    |   
+
+## Cálculo de speedup 
+
+## Cálculo de eficiencia 
+
+## Gráficas de rendiemiento

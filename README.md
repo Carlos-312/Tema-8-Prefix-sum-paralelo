@@ -463,6 +463,10 @@ Este comportamiento puede deberse a los costos de sincronización y administraci
 ----
 
 # Conclusiones 
+El desarrollo e implementación del algoritmo de Blelloch permitió comprobar cómo una operación aparentemente secuencial, como lo es el cálculo de sumas de prefijos, puede paralelizarse aprovechando la propiedad asociativa de la suma y una estructura de árbol binario. A través de las fases de Up-sweep y Down-sweep, se logró obtener exactamente el mismo resultado que con el método tradicional, pero reduciendo la complejidad de O(n) a O(log n) y conservando un trabajo total óptimo de O(n), lo que respalda lo establecido por la Ley de Brent en el plano teórico.
 
+Sin embargo, al llevar el algoritmo a la práctica en C utilizando OpenMP con un arreglo de 1,048,576 elementos, observamos que la versión secuencial superó en velocidad a la paralela en todas las pruebas realizadas con 1, 2, 4 y 8 hilos. Esto demuestra que una menor profundidad teórica no garantiza automáticamente un menor tiempo de ejecución en la realidad, ya que el algoritmo de Blelloch realiza aproximadamente el doble de operaciones que el recorrido lineal y requiere sincronizar los hilos en cada nivel del árbol, generando un costo de administración (overhead) mayor al tiempo que toma realizar sumas simples de enteros.
+
+Se concluye que el éxito del paralelismo depende en gran medida de la arquitectura y del costo de la operación a realizar. Para arreglos de enteros en una CPU convencional, el enfoque secuencial sigue siendo más conveniente por su bajo costo operativo y mejor aprovechamiento de la memoria caché, mientras que el algoritmo de Blelloch cobra verdadero valor cuando se aplica en arquitecturas masivamente paralelas como las tarjetas gráficas (GPU) o cuando las operaciones entre elementos son mucho más pesadas computacionalmente.
 # Referencias 
 

@@ -3,10 +3,11 @@
 ---
 
 # Integrantes
-- [323255343] - Gil Isaias Kevin
-- [323273613] - Sánchez Ledesma Paulina
-- [323111047] - Montes Alcántara Diego
 - [323080549] - Flores Reyes Carlos Roberto
+- [323255343] - Gil Isaias Kevin
+- [323111047] - Montes Alcántara Diego
+- [323273613] - Sánchez Ledesma Paulina
+
 
 ---
 

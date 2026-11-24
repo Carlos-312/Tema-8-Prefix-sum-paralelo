@@ -465,3 +465,7 @@ Sin embargo, al llevar el algoritmo a la práctica en C utilizando OpenMP con un
 Se concluye que el éxito del paralelismo depende en gran medida de la arquitectura y del costo de la operación a realizar. Para arreglos de enteros en una CPU convencional, el enfoque secuencial sigue siendo más conveniente por su bajo costo operativo y mejor aprovechamiento de la memoria caché, mientras que el algoritmo de Blelloch cobra verdadero valor cuando se aplica en arquitecturas masivamente paralelas como las tarjetas gráficas (GPU) o cuando las operaciones entre elementos son mucho más pesadas computacionalmente.
 # Referencias 
 
+- Blelloch, G. E. *Prefix Sums and Their Applications* (CMU): https://www.cs.cmu.edu/~guyb/papers/Ble93.pdf
+- Harris, M., Sengupta, S., & Owens, J. D. *Parallel Prefix Sum (Scan) with CUDA* (*GPU Gems 3*, Cap. 39): https://developer.nvidia.com/gpugems/gpugems3/part-vi-gpu-computing/chapter-39-parallel-prefix-sum-scan-cuda
+- Carnegie Mellon University (15-853). *Introduction to Parallel Algorithms* (Scan): https://www.cs.cmu.edu/~realworld/slidesS18/parallelChap.pdf
+- IBM Documentation. `#pragma omp parallel` (OpenMP): https://www.ibm.com/docs/en/zos/3.1.0?topic=processing-pragma-omp-parallel

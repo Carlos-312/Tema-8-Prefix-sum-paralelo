@@ -190,7 +190,7 @@ De esta manera se comprueba que el algoritmo de Blelloch permite obtener las mis
 
 ---
 
-# ¿Por qué las iteraciones de cada nivel son independientes?
+## ¿Por qué las iteraciones de cada nivel son independientes?
 
 Una de las principales ventajas del algoritmo de Blelloch es que permite ejecutar varias operaciones simultáneamente (paralelismo).
 
@@ -219,7 +219,7 @@ Esta característica es la que permite utilizar la directiva `#pragma omp parall
 
 ---
 
-# Trabajo y profundidad
+## Trabajo y profundidad
 
 Para analizar el rendimiento de un algoritmo paralelo se utilizan dos conceptos:
 - Trabajo: representa la cantidad total de operaciones que realiza el algoritmo.
